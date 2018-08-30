@@ -12,7 +12,9 @@ networks:
   backend:
 
 volumes:
+  # For storing storing database contents
   vol-matomo-db:
+  # For storing the Matomo website files
   vol-matomo-content:
 
 services:
@@ -43,6 +45,7 @@ services:
       - "traefik.protocol=http"
       # Remove next line to disable login prompt for the dashboard.
       - "traefik.frontend.auth.basic=${BASIC_AUTH}"
+
   # Watchtower detects if any linked containers have an new image
   # available, automatically updating & restarting them if needed.
   watchtower:
@@ -54,6 +57,7 @@ services:
     restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+
   matomo-db:
     # https://hub.docker.com/_/mariadb/
     # Specify 10.3 as we only want watchtower to apply minor updates
@@ -68,6 +72,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${MATOMO_DB_ROOT_PASSWORD}
       MYSQL_DATABASE: matomo
+
   matomo-web:
     image: matomo
     links:
@@ -75,15 +80,20 @@ services:
     networks:
       - backend
     volumes:
+      # To allow you to view/edit Matomo configurations
       - ./config:/var/www/html/config:rw
+      # To allow you to easily view Matomo logs
       - ./logs:/var/www/html/logs
+      # Default PHP configurations are usually quite restrictive - So we relax them a little here:
       - ./php.ini:/usr/local/etc/php/php.ini
+      # To allow Matomo files to not get wiped between container restarts
       - vol-matomo-content:/var/www/html
     environment:
       MYSQL_HOST: matomo-db
       MYSQL_USER: root
       MYSQL_DATABASE: matomo
       MYSQL_ROOT_PASSWORD: ${MATOMO_DB_ROOT_PASSWORD}
+    # This alows us to tell Traefik that it should a) pass traffic to Matomo and b) to get SSL certificates for it.
     labels:
       - "traefik.docker.network=frontend"
       - "traefik.enable=true"
@@ -92,6 +102,8 @@ services:
       - "traefik.protocol=http"
       # Uncomment the next line to enable HSTS header.
       #- "traefik.frontend.headers.STSSeconds=15768000"
+
+  # A little extra container for Matomo to send out mail!
   mail:
     image: bytemark/smtp
     restart: always
