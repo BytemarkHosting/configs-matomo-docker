@@ -11,11 +11,10 @@ networks:
   frontend:
   backend:
 
+# Create persistent Docker volumes to preserve important data.
+# We don't want our data to be lost when restarting containers.
 volumes:
-  # For storing storing database contents
   vol-matomo-db:
-  # For storing the Matomo website files
-  vol-matomo-content:
 
 services:
   # Traefik is a reverse proxy. It handles SSL and passes traffic to
@@ -79,12 +78,11 @@ services:
       - matomo-db
     networks:
       - backend
+      - frontend
     volumes:
-      # Ensure content persists between restarts:
-      - vol-matomo-content:/var/www/html
-      # To allow you to view/edit Matomo configurations
+      # To allow you to view/edit Matomo configuration files:
       - ./config:/var/www/html/config:rw
-      # To allow you to easily view Matomo logs
+      # To allow you to easily view Matomo log files:
       - ./logs:/var/www/html/logs
       # Install our own php.ini, which can be customized:
       - ./php.ini:/usr/local/etc/php/php.ini
