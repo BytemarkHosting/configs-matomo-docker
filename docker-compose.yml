@@ -70,7 +70,7 @@ services:
       - vol-matomo-db:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${MATOMO_DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: matomo
+      MYSQL_DATABASE: ${MATOMO_DB_NAME}
 
   matomo-web:
     image: matomo
@@ -89,7 +89,7 @@ services:
     environment:
       MYSQL_HOST: matomo-db
       MYSQL_USER: root
-      MYSQL_DATABASE: matomo
+      MYSQL_DATABASE: ${MATOMO_DB_NAME}
       MYSQL_ROOT_PASSWORD: ${MATOMO_DB_ROOT_PASSWORD}
     labels:
       - "traefik.docker.network=frontend"
