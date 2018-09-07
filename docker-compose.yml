@@ -72,8 +72,8 @@ services:
       MYSQL_ROOT_PASSWORD: ${MATOMO_DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MATOMO_DB_NAME}
 
-  matomo-web:
-    image: matomo
+  matomo:
+    image: matomo:latest
     links:
       - matomo-db
     networks:
