@@ -80,20 +80,19 @@ services:
     networks:
       - backend
     volumes:
+      # Ensure content persists between restarts:
+      - vol-matomo-content:/var/www/html
       # To allow you to view/edit Matomo configurations
       - ./config:/var/www/html/config:rw
       # To allow you to easily view Matomo logs
       - ./logs:/var/www/html/logs
-      # Default PHP configurations are usually quite restrictive - So we relax them a little here:
+      # Install our own php.ini, which can be customized:
       - ./php.ini:/usr/local/etc/php/php.ini
-      # To allow Matomo files to not get wiped between container restarts
-      - vol-matomo-content:/var/www/html
     environment:
       MYSQL_HOST: matomo-db
       MYSQL_USER: root
       MYSQL_DATABASE: matomo
       MYSQL_ROOT_PASSWORD: ${MATOMO_DB_ROOT_PASSWORD}
-    # This alows us to tell Traefik that it should a) pass traffic to Matomo and b) to get SSL certificates for it.
     labels:
       - "traefik.docker.network=frontend"
       - "traefik.enable=true"
@@ -103,9 +102,12 @@ services:
       # Uncomment the next line to enable HSTS header.
       #- "traefik.frontend.headers.STSSeconds=15768000"
 
-  # A little extra container for Matomo to send out mail!
+  # This allows WordPress to send email straight out of the box without
+  # having to rely on an external provider like SendGrid or MailGun.
+  # It makes an SMTP host available at the hostname "mail".
   mail:
     image: bytemark/smtp
     restart: always
     networks:
       - frontend
+
