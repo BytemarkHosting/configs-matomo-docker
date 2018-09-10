@@ -68,9 +68,6 @@ services:
     volumes:
       # Ensure the database persists between restarts.
       - vol-matomo-db:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MATOMO_DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MATOMO_DB_NAME}
 
   matomo:
     image: matomo:latest
