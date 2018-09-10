@@ -86,11 +86,6 @@ services:
       - ./logs:/var/www/html/logs
       # Install our own php.ini, which can be customized:
       - ./php.ini:/usr/local/etc/php/php.ini
-    environment:
-      MYSQL_HOST: matomo-db
-      MYSQL_USER: root
-      MYSQL_DATABASE: ${MATOMO_DB_NAME}
-      MYSQL_ROOT_PASSWORD: ${MATOMO_DB_ROOT_PASSWORD}
     labels:
       - "traefik.docker.network=frontend"
       - "traefik.enable=true"
