@@ -86,6 +86,10 @@ services:
       - ./logs:/var/www/html/logs
       # Install our own php.ini, which can be customized:
       - ./php.ini:/usr/local/etc/php/php.ini
+      # Use MaxMind GeoLite2 databases.
+      #- /var/lib/GeoIP/GeoLite2-City.mmdb:/var/www/html/misc/GeoLite2-City.mmdb
+      #- /var/lib/GeoIP/GeoLite2-Country.mmdb:/var/www/html/misc/GeoLite2-Country.mmdb
+      #- /var/lib/GeoIP/GeoLite2-ASN.mmdb:/var/www/html/misc/GeoLite2-ASN.mmdb
     labels:
       - "traefik.docker.network=frontend"
       - "traefik.enable=true"
