@@ -101,6 +101,34 @@ services:
       # Uncomment the next line to enable HSTS header.
       #- "traefik.frontend.headers.STSSeconds=15768000"
 
+  # Navigate to http://example.com/phpmyadmin/ to manage your MySQL
+  # databases. (Don't forget the last forward slash.) Like the Traefik
+  # dashboard, this is behind a login prompt to help you stay secure.
+  matomo-phpmyadmin:
+    # https://hub.docker.com/r/phpmyadmin/phpmyadmin/
+    image: phpmyadmin/phpmyadmin:latest
+    depends_on:
+      - matomo-db
+    restart: always
+    networks:
+      - backend
+      - frontend
+    volumes:
+      # Install our own php.ini, which can be customized.
+      - ./php.ini:/usr/local/etc/php/php.ini
+    environment:
+      PMA_HOST: matomo-db
+      PMA_ABSOLUTE_URI: /phpmyadmin/
+      MYSQL_ROOT_PASSWORD: ${MATOMO_DB_ROOT_PASSWORD}
+    labels:
+      - "traefik.docker.network=frontend"
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:${MATOMO_DOMAINS}; PathPrefixStrip:/phpmyadmin/"
+      - "traefik.port=80"
+      - "traefik.protocol=http"
+      # Remove the next line if you don't want a browser login prompt.
+      - "traefik.frontend.auth.basic=${BASIC_AUTH}"
+
   # This allows Matomo to send email straight out of the box without
   # having to rely on an external provider like SendGrid or MailGun.
   # It makes an SMTP host available at the hostname "mail".
